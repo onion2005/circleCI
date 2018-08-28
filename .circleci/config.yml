@@ -1,41 +1,41 @@
 version: 2
 jobs:
-  one:
+  build:
     docker:
       - image: circleci/ruby:2.4.1
     steps:
       - checkout
       - run: echo "Build Jar/Docker"
       - run: sleep 25
-  two:
+  sit:
     docker:
       - image: circleci/ruby:2.4.1
     steps:
       - checkout
       - run: echo "Deploy to SIT (Int Dev)"
       - run: sleep 15
-  three:
+  demo:
     docker:
       - image: circleci/ruby:2.4.1
     steps:
       - checkout
       - run: echo "Deploy to DEMO"
       - run: sleep 15
-  four:
+  nft:
     docker:
       - image: circleci/ruby:2.4.1
     steps:
       - checkout
       - run: echo "Deploy to NFT"
       - run: sleep 15
-  five:
+  staging:
     docker:
       - image: circleci/ruby:2.4.1
     steps:
       - checkout
       - run: echo "Deploy to STAGING"
       - run: sleep 15        
-  six:
+  prod:
     docker:
       - image: circleci/ruby:2.4.1
     steps:
@@ -44,19 +44,37 @@ jobs:
       - run: sleep 15        
 workflows:
   version: 2
-  one_and_two:
+  pipeline:
     jobs:
-      - one      
-      - two
-      - three
-      - request-approval:
+      - build      
+      - sit
+          requires:
+            - build
+      - request-approval-demo:
           type: approval
           requires:
-            - three      
-      - four
-      - five
-      - six
-      - request-approval:
+            - sit      
+      - demo
+          requires:
+            - request-approval-demo
+      - request-approval-nft:
           type: approval
           requires:
-            - six          
+            - demo      
+      - nft
+          requires:
+            - request-approval-nft
+      - request-approval-staging:
+          type: approval
+          requires:
+            - nft               
+      - staging
+          requires:
+            - request-approval-staging
+      - request-approval-production:
+          type: approval
+          requires:
+            - staging             
+      - prod
+          requires:
+            - request-approval-production          
