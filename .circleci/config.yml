@@ -14,19 +14,40 @@ jobs:
       - checkout
       - run: echo "Deploy to SIT (Int Dev)"
       - run: sleep 15
-  test:
+  test_sit_1:
     docker:
       - image: circleci/ruby:2.4.1
     steps:
       - checkout
-      - run: echo "Test SIT (Int Dev)"
+      - run: echo "Test in SIT (Int Dev)"
       - run: sleep 15
+  test_sit_2:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "Test in SIT (Int Dev)"
+      - run: sleep 15     
+  test_sit_3:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "Test in SIT (Int Dev)"
+      - run: sleep 15          
   demo:
     docker:
       - image: circleci/ruby:2.4.1
     steps:
       - checkout
       - run: echo "Deploy to DEMO"
+      - run: sleep 15
+  smoke_test_demo:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "Smoke Test in DEMO"
       - run: sleep 15
   nft:
     docker:
@@ -35,13 +56,34 @@ jobs:
       - checkout
       - run: echo "Deploy to NFT"
       - run: sleep 15
+  smoke_test_nft:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "Smoke Test in NFT"
+      - run: sleep 15      
   staging:
     docker:
       - image: circleci/ruby:2.4.1
     steps:
       - checkout
       - run: echo "Deploy to STAGING"
-      - run: sleep 15        
+      - run: sleep 15
+  smoke_test_staging:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "Smoke Test in STAGING"
+      - run: sleep 15   
+  regression_test_staging:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "Regression Test in STAGING"
+      - run: sleep 15         
   prod:
     docker:
       - image: circleci/ruby:2.4.1
@@ -49,7 +91,14 @@ jobs:
       - checkout
       - run: echo "Deploy to PRODUCTION"
       - run: sleep 15         
-
+  smoke_test_prod:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "Smoke Test in PRODUCTION"
+      - run: sleep 15 
+      
 workflows:
   version: 2
   pipeline:
@@ -58,26 +107,46 @@ workflows:
       - sit:
           requires:
             - build 
-      - test:
+      - test_sit_1:
           requires:
-            - sit           
+            - sit
+      - test_sit_2:
+          requires:
+            - sit   
+      - test_sit_3:
+          requires:
+            - sit               
       - hold_demo:
           type: approval
           requires:
-            - test   
+            - test_sit_1
+            - test_sit_2
+            - test_sit_3
       - demo:
           requires:
-            - hold_demo             
-      - nft:
+            - hold_demo
+      - smoke_test_demo:
           requires:
             - demo      
+      - nft:
+          requires:
+            - smoke_test_demo
+      - smoke_test_nft:
+          requires:
+            - nft
       - staging:
           requires:
-            - nft         
+            - smoke_test_nft
+      - smoke_test_staging:
+          requires:
+            - staging            
       - hold_prod:
           type: approval
           requires:
-            - staging        
+            - smoke_test_staging        
       - prod:
           requires:
             - hold_prod        
+      - smoke_test_prod:
+          requires:
+            - prod  
