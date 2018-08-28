@@ -56,24 +56,12 @@ workflows:
     jobs:
       - build      
       - sit
-          requires:
-            - build
       - test
-          requires:
-            - sit
       - hold:
           type: approval
           requires:
            - test   
       - demo
-          requires:
-            - hold
       - nft
-          requires:
-            - hold
       - staging
-          requires:
-            - hold
       - prod
-          requires:
-            - hold  
