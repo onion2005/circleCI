@@ -57,12 +57,12 @@ workflows:
       - build      
       - sit
           requires:
-           - build 
+            - build 
       - test
       - hold:
           type: approval
           requires:
-           - test   
+            - test   
       - demo
       - nft
       - staging
