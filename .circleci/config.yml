@@ -45,6 +45,7 @@ jobs:
   smoke_test_demo:
     docker:
       - image: circleci/ruby:2.4.1
+    parallelism: 2  
     steps:
       - checkout
       - run: echo "Smoke Test in DEMO"
