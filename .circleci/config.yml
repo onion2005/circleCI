@@ -14,6 +14,13 @@ jobs:
       - checkout
       - run: echo "Deploy to SIT (Int Dev)"
       - run: sleep 15
+  test:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "Test SIT (Int Dev)"
+      - run: sleep 15
   demo:
     docker:
       - image: circleci/ruby:2.4.1
@@ -50,31 +57,22 @@ workflows:
       - sit
           requires:
             - build
-      - request-approval-demo:
+      - test
+          requires:
+            - sit
+      - hold:
           type: approval
           requires:
-            - sit      
+           - test   
       - demo
           requires:
-            - request-approval-demo
-      - request-approval-nft:
-          type: approval
-          requires:
-            - demo      
+            - hold
       - nft
           requires:
-            - request-approval-nft
-      - request-approval-staging:
-          type: approval
-          requires:
-            - nft               
+            - hold
       - staging
           requires:
-            - request-approval-staging
-      - request-approval-production:
-          type: approval
-          requires:
-            - staging             
+            - hold
       - prod
           requires:
-            - request-approval-production          
+            - hold     
