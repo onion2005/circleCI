@@ -5,18 +5,58 @@ jobs:
       - image: circleci/ruby:2.4.1
     steps:
       - checkout
-      - run: echo "A first hello"
+      - run: echo "Build Jar/Docker"
       - run: sleep 25
   two:
     docker:
       - image: circleci/ruby:2.4.1
     steps:
       - checkout
-      - run: echo "A more familiar hi"
+      - run: echo "Deploy to SIT (Int Dev)"
       - run: sleep 15
+  three:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "Deploy to DEMO"
+      - run: sleep 15
+  four:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "Deploy to NFT"
+      - run: sleep 15
+  five:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "Deploy to STAGING"
+      - run: sleep 15        
+  six:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "Deploy to PRODUCTION"
+      - run: sleep 15        
 workflows:
   version: 2
   one_and_two:
     jobs:
-      - one
+      - one      
       - two
+      - three
+      - request-approval:
+          type: approval
+          requires:
+            - three      
+      - four
+      - five
+      - six
+      - request-approval:
+          type: approval
+          requires:
+            - six          
