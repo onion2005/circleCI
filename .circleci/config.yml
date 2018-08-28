@@ -56,6 +56,8 @@ workflows:
     jobs:
       - build      
       - sit
+          requires:
+           - build 
       - test
       - hold:
           type: approval
