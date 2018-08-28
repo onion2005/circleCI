@@ -61,11 +61,23 @@ workflows:
       - test:
           requires:
             - sit           
-      - hold:
+      - hold_demo:
           type: approval
           requires:
             - test   
-      - demo
-      - nft
+      - demo:
+          requires:
+            - hold_demo             
+      - nft:
+          requires:
+            - demo      
       - staging
+          requires:
+            - nft         
+      - hold_prod:
+          type: approval
+          requires:
+            - staging        
       - prod
+          requires:
+            - hold_prod        
