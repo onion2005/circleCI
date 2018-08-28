@@ -55,10 +55,12 @@ workflows:
   pipeline:
     jobs:
       - build      
-      - sit
+      - sit:
           requires:
             - build 
-      - test
+      - test:
+          requires:
+            - sit           
       - hold:
           type: approval
           requires:
