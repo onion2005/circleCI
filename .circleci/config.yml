@@ -71,13 +71,13 @@ workflows:
       - nft:
           requires:
             - demo      
-      - staging
+      - staging:
           requires:
             - nft         
       - hold_prod:
           type: approval
           requires:
             - staging        
-      - prod
+      - prod:
           requires:
             - hold_prod        
