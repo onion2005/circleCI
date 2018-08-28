@@ -49,3 +49,31 @@ jobs:
       - checkout
       - run: echo "Deploy to PRODUCTION"
       - run: sleep 15         
+
+workflows:
+  version: 2
+  pipeline:
+    jobs:
+      - build      
+      - sit
+          requires:
+            - build
+      - test
+          requires:
+            - sit
+      - hold:
+          type: approval
+          requires:
+           - test   
+      - demo
+          requires:
+            - hold
+      - nft
+          requires:
+            - hold
+      - staging
+          requires:
+            - hold
+      - prod
+          requires:
+            - hold  
